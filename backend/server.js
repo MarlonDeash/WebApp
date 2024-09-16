@@ -1,21 +1,31 @@
-require('dotenv').config()
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
-const express = require('express')
+// Import the database connection function
+const ConnectDB = require("./utils/connection");
 
+// Initialize Express app
+const app = express();
+const port = process.env.PORT || 8000;
 
-//express app
-const app = express()
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-app.use((req, res, next) => {
-    console.log(req.path, req.method)
-    next()
-})
+// Start server after connecting to MongoDB
+const startServer = async () => {
+    await ConnectDB(); // Ensure database connection is established
 
-app.get('/', (req, res) => {
-    res.json({mssg: 'Welcome to the app'})
-})
+    // Define your routes and other middleware here
+    app.get('/', (req, res) => {
+        res.json({ message: 'Welcome to the app' });
+    });
 
-// listen for requests
-app.listen(process.env.PORT, () => {
-    console.log('listening on port' , process.env.PORT)
-})
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+};
+
+// Start the server
+startServer();
